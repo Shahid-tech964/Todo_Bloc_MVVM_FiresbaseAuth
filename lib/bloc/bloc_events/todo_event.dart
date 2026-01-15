@@ -14,4 +14,14 @@ class DeleteEvent extends TodoEvent {
   DeleteEvent({required this.indx});
 }
 
-class LoadTodoEvent extends TodoEvent{}
+class LoadTodoEvent extends TodoEvent {}
+
+class TitleChangeEvent extends TodoEvent {
+  String? title;
+  TitleChangeEvent({required this.title});
+}
+
+class ContentChangeEvent extends TodoEvent {
+  String? content;
+  ContentChangeEvent({required this.content});
+}

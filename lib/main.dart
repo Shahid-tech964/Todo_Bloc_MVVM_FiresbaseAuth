@@ -18,8 +18,14 @@ void main() async {
 
   TodoRepository repository = TodoRepository();
   runApp(
-    BlocProvider(
-      create: (_) => TodoBloc(repo: repository),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => TodoBloc(repo: repository)),
+
+        BlocProvider(create: (_) => TitleValidationBloc()),
+
+        BlocProvider(create: (_) => ContentValidationBloc()),
+      ],
       child: MyApp(),
     ),
   );
@@ -58,6 +64,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-
-

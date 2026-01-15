@@ -21,18 +21,23 @@ class _AddTodoViewState extends State<AddTodoView> {
 
   @override
   void initState() {
-    context.read<TodoBloc>().add(LoadTodoEvent());
-    // TODO: implement initState
     super.initState();
+    context.read<TodoBloc>().add(LoadTodoEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        /// TITLE FIELD
         TextField(
           controller: titleController,
+          onChanged: (text) {
+            context.read<TitleValidationBloc>().add(
+              TitleChangeEvent(title: text),
+            );
+          },
           onTap: () {
             setState(() {
               isTitleFocused = true;
@@ -41,8 +46,8 @@ class _AddTodoViewState extends State<AddTodoView> {
           },
           decoration: InputDecoration(
             hintText: "Title",
-            border: OutlineInputBorder(),
-            focusedBorder: OutlineInputBorder(
+            border: const OutlineInputBorder(),
+            focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.blue, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
@@ -53,11 +58,29 @@ class _AddTodoViewState extends State<AddTodoView> {
           ),
         ),
 
+        const SizedBox(height: 3),
+
+        /// TITLE ERROR
+        BlocBuilder<TitleValidationBloc, String>(
+          builder: (context, state) {
+            return Text(
+              state.toString(),
+              style: const TextStyle(fontSize: 14, color: Colors.red),
+            );
+          },
+        ),
+
         const SizedBox(height: 12),
 
+        /// CONTENT FIELD
         TextField(
           controller: contentController,
           maxLines: 3,
+          onChanged: (text) {
+            context.read<ContentValidationBloc>().add(
+              ContentChangeEvent(content: text),
+            );
+          },
           onTap: () {
             setState(() {
               isContentFocused = true;
@@ -66,8 +89,8 @@ class _AddTodoViewState extends State<AddTodoView> {
           },
           decoration: InputDecoration(
             hintText: "Content",
-            border: OutlineInputBorder(),
-            focusedBorder: OutlineInputBorder(
+            border: const OutlineInputBorder(),
+            focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.blue, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
@@ -78,29 +101,47 @@ class _AddTodoViewState extends State<AddTodoView> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 3),
 
-        IconButton(
-          icon: Icon(Icons.add, size: 30),
-          onPressed: () {
-            context.read<TodoBloc>().add(
-              AddEvent(
-                title: titleController.text,
-                content: contentController.text,
-              ),
+        /// CONTENT ERROR
+        BlocBuilder<ContentValidationBloc, String>(
+          builder: (context, state) {
+            return Text(
+              state.toString(),
+              style: const TextStyle(fontSize: 14, color: Colors.red),
             );
           },
         ),
 
-        SizedBox(height: 20),
+        const SizedBox(height: 16),
 
+        /// ADD BUTTON
+         Align(
+            alignment: Alignment.center,
+            child: IconButton(
+              icon: const Icon(Icons.add, size: 30),
+              onPressed: () {
+                context.read<TodoBloc>().add(
+                  AddEvent(
+                    title: titleController.text,
+                    content: contentController.text,
+                  ),
+                );
+              },
+            ),
+          ),
+        
+
+        const SizedBox(height: 20),
+
+        /// TODO LIST (ONLY HERE Expanded IS CORRECT)
         Expanded(
           child: BlocBuilder<TodoBloc, TodoState>(
             builder: (context, state) {
               if (state is TodoEmpty) {
-                return Center(child: Text("Empty Todo"));
+                return const Center(child: Text("Empty Todo"));
               } else if (state is TodoLoaded) {
-                List<Todo> data = state.todos;
+                final data = state.todos;
                 return ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
@@ -108,7 +149,7 @@ class _AddTodoViewState extends State<AddTodoView> {
                       title: Text(data[index].title ?? ""),
                       subtitle: Text(data[index].content ?? ""),
                       trailing: IconButton(
-                        icon: Icon(Icons.delete, size: 25),
+                        icon: const Icon(Icons.delete, size: 25),
                         onPressed: () {
                           context.read<TodoBloc>().add(
                             DeleteEvent(indx: index),
@@ -119,7 +160,7 @@ class _AddTodoViewState extends State<AddTodoView> {
                   },
                 );
               } else {
-                return Container();
+                return const SizedBox();
               }
             },
           ),

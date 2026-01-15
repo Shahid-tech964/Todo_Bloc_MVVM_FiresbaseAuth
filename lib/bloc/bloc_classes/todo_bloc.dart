@@ -30,3 +30,29 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     });
   }
 }
+
+class TitleValidationBloc extends Bloc<TodoEvent, String> {
+  TitleValidationBloc() : super("") {
+    on<TitleChangeEvent>((event, emit) async {
+      if (event.title!.isEmpty) {
+        emit("Please Enter Title");
+      } else if (event.title!.length < 6) {
+        emit("Title should't contain less than 6 character");
+      } else {
+        emit("");
+      }
+    });
+  }
+}
+
+class ContentValidationBloc extends Bloc<TodoEvent, String> {
+  ContentValidationBloc() : super("") {
+    on<ContentChangeEvent>((event, emit) async {
+      if (event.content!.isEmpty) {
+        emit("Please Enter Content");
+      } else {
+        emit("");
+      }
+    });
+  }
+}
